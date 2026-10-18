@@ -11,7 +11,7 @@ COPY . .
 RUN dotnet publish "MyWebApi.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 # Stage 2: Runtime Image (Lightweight & Hardened)
-FROM [mcr.microsoft.com/dotnet/aspnet:8.0](https://mcr.microsoft.com/dotnet/aspnet:8.0) AS final
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 
 # Copy compiled binaries from build stage
