@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mywebapi-deployment
+  labels:
+    app: mywebapi
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mywebapi
+  template:
+    metadata:
+      labels:
+        app: mywebapi
+    spec:
+      containers:
+      - name: mywebapi
+        image: acraksdemo14961.azurecr.io/mywebapi:v1
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+
+        # Security Context (Hardened Container Runtime)
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1654
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+
+        # SRE Resource Management
+        resources:
+          requests:
+            cpu: "100m"      # 0.1 CPU core
+            memory: "128Mi"  # 128 MB RAM
+          limits:
+            cpu: "250m"      # 0.25 CPU core
+            memory: "256Mi"  # 256 MB RAM
+
+        # Health Checks & Observability
+        readinessProbe:
+          httpGet:
+            path: /weatherforecast
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          failureThreshold: 3
+
+        livenessProbe:
+          httpGet:
+            path: /weatherforecast
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 15
+          failureThreshold: 3
