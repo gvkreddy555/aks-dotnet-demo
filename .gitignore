@@ -1,0 +1,10 @@
+# .NET Build and publish outputs
+**/bin/
+**/obj/
+**/.vs/
+**/.vscode/
+*.user
+
+# Operating System files
+.DS_Store
+Thumbs.db
