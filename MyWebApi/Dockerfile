@@ -22,6 +22,7 @@ USER app
 
 # Set environment variable for HTTP port
 ENV ASPNETCORE_HTTP_PORTS=8080
+ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
 
 ENTRYPOINT ["dotnet", "MyWebApi.dll"]
