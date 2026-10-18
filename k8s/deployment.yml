@@ -16,8 +16,8 @@ spec:
     spec:
       containers:
       - name: mywebapi
-        image: acraksdemo14961.azurecr.io/mywebapi:v1
-        imagePullPolicy: IfNotPresent
+        image: acraksdemo14961.azurecr.io/mywebapi:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
 
