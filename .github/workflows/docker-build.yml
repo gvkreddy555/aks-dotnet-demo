@@ -1,0 +1,27 @@
+name: Build and Push to ACR
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Log in to ACR
+        run: |
+          az acr login --name acraksdemo14961
+
+      - name: Build and Push Docker Image
+        run: |
+          cd MyWebApi
+          docker build -t acraksdemo14961.azurecr.io/mywebapi:v1 .
+          docker push acraksdemo14961.azurecr.io/mywebapi:v1
