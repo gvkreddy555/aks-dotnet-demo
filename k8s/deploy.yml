@@ -1,0 +1,39 @@
+name: Build and Deploy to AKS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Build and Push Docker Image
+      run: |
+        az acr login --name acraksdemo14961
+        docker build -t acraksdemo14961.azurecr.io/mywebapi:${{ github.sha }} -t acraksdemo14961.azurecr.io/mywebapi:latest -f MyWebApi/Dockerfile MyWebApi
+        docker push acraksdemo14961.azurecr.io/mywebapi:${{ github.sha }}
+        docker push acraksdemo14961.azurecr.io/mywebapi:latest
+
+    - name: Get AKS Credentials
+      run: |
+        az aks get-credentials --resource-group rg-aks-demo-eastus --name aks-demo-cluster --admin
+
+    - name: Deploy Manifests to AKS
+      run: |
+        kubectl apply -f k8s/deployment.yml
+        kubectl apply -f k8s/service.yml
+        kubectl apply -f k8s/ingress.yml
+        kubectl apply -f k8s/hpa.yml
+        kubectl set image deployment/mywebapi-deployment mywebapi=acraksdemo14961.azurecr.io/mywebapi:${{ github.sha }}
+        kubectl rollout status deployment/mywebapi-deployment
